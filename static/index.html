@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Legislative AI | Premium Dashboard</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter for that premium sans-serif feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked JS for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style data-purpose="typography">
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    <style data-purpose="glassmorphism-and-gradients">
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        .glass-sidebar-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.03);
+        }
+
+        .bg-mesh {
+            background-color: #f0f4f8;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(230, 100%, 93%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(190, 100%, 91%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(260, 100%, 94%, 1) 0, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(170, 100%, 92%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 50%, hsla(210, 100%, 95%, 1) 0, transparent 80%);
+        }
+
+        .btn-premium-purple {
+            background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium-teal {
+            background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .efficiency-accent {
+            background: rgba(236, 253, 245, 0.6);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Keep the utility classes that script.js expects */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .content-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Markdown styling */
+        .content-area h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .content-area h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 20px 0 10px;
+        }
+
+        .content-area ul {
+            padding-left: 20px;
+            list-style-type: disc;
+            margin-bottom: 15px;
+        }
+
+        .content-area li {
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .content-area strong {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .content-area p {
+            margin-bottom: 12px;
+        }
+
+
+
+        /* Loader styling */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Chat bubble utilities */
+        .bubble {
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 85%;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .user-msg {
+            background: #6366f1;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-msg {
+            background: #f8fafc;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Dark Mode Premium Overrides (Apple Liquid Glass style) */
+        body.dark-mode {
+            background-color: #0f172a !important;
+            /* Deep Navy/Charcoal */
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .bg-mesh {
+            background-color: #0f172a !important;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(49, 46, 129, 0.4) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.25) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(88, 28, 135, 0.25) 0, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(14, 116, 144, 0.25) 0, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(30, 58, 138, 0.4) 0, transparent 80%) !important;
+        }
+
+        body.dark-mode .glass-card,
+        body.dark-mode .glass-sidebar-card {
+            background: rgba(30, 41, 59, 0.65) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Text Colors */
+        body.dark-mode .text-slate-900,
+        body.dark-mode .text-slate-800 {
+            color: #f8fafc !important;
+        }
+
+        body.dark-mode .text-slate-700,
+        body.dark-mode .text-slate-600 {
+            color: #cbd5e1 !important;
+        }
+
+        body.dark-mode .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+
+        /* Backgrounds & Borders */
+        body.dark-mode .bg-white {
+            background-color: #1e293b !important;
+        }
+
+        body.dark-mode .bg-slate-50,
+        body.dark-mode .bg-slate-100 {
+            background-color: #334155 !important;
+        }
+
+        body.dark-mode .border-slate-200,
+        body.dark-mode .border-slate-300 {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Interactive Elements & Chat */
+        body.dark-mode select {
+            color: #f1f5f9 !important;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+        }
+
+        body.dark-mode .ai-msg {
+            background: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .user-msg {
+            color: white !important;
+        }
+
+        body.dark-mode .efficiency-accent {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        }
+
+        /* Process Button disabled state */
+        body.dark-mode button:disabled {
+            background-color: #475569 !important;
+            color: #94a3b8 !important;
+        }
+
+        /* Efficiency Hub Text Colors */
+        body.dark-mode .text-emerald-700 {
+            color: #34d399 !important;
+        }
+
+        body.dark-mode .text-emerald-600 {
+            color: #10b981 !important;
+        }
+
+        /* Interactive Tabs (active state) */
+        body.dark-mode .bg-indigo-600 {
+            background-color: #6366f1 !important;
+        }
+
+        body.dark-mode .text-indigo-600 {
+            color: #818cf8 !important;
+        }
+
+        body.dark-mode .text-indigo-500 {
+            color: #a5b4fc !important;
+        }
+
+        body.dark-mode .text-teal-600 {
+            color: #2dd4bf !important;
+        }
+
+        /* Hover States for Cards and Buttons */
+        body.dark-mode .hover\:bg-slate-50:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        body.dark-mode .hover\:bg-indigo-50:hover {
+            background-color: rgba(99, 102, 241, 0.15) !important;
+        }
+
+        body.dark-mode .hover\:bg-teal-50:hover {
+            background-color: rgba(20, 184, 166, 0.15) !important;
+        }
+
+        body.dark-mode .hover\:border-indigo-400:hover {
+            border-color: #818cf8 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-mesh min-h-screen text-slate-800 antialiased overflow-x-hidden">
+    <!-- BEGIN: Navigation -->
+    <header class="sticky top-0 z-50 px-6 py-4 relative" data-purpose="main-navigation">
+        <nav style="position: relative; z-index: 999;" class="max-w-[1600px] mx-auto flex items-center justify-between glass-card rounded-2xl px-8 py-3">
+            <!-- Logo Section -->
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-200">
+                    L</div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Legislative <span
+                        class="text-indigo-600">AI</span></h1>
+            </div>
+
+            <!-- Controls Section -->
+            <div class="flex items-center gap-6">
+                <!-- Custom Language Selector -->
+                <div class="relative" id="language-dropdown-container">
+                    <button id="language-dropdown-btn" type="button" 
+                        class="flex items-center gap-2 px-3 py-2 bg-white/60 hover:bg-white backdrop-blur-xl border border-slate-200/60 hover:border-indigo-300 rounded-xl transition-all shadow-sm group">
+                        <svg class="w-4 h-4 text-slate-500 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span id="language-selected-text" class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">🇬🇧 English</span>
+                        <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-transform duration-200" id="language-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="language-menu" class="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-2xl shadow-xl opacity-0 invisible transform scale-95 transition-all duration-200 z-[100] overflow-hidden">
+                        <div class="p-1.5 flex flex-col gap-0.5">
+                            <button class="language-option w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/80 rounded-xl transition-colors font-medium text-left" data-value="English" data-flag="🇬🇧">
+                                <span class="text-base">🇬🇧</span> English
+                            </button>
+                            <button class="language-option w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/80 rounded-xl transition-colors font-medium text-left" data-value="Hindi" data-flag="🇮🇳">
+                                <span class="text-base">🇮🇳</span> Hindi
+                            </button>
+                            <button class="language-option w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:text-indigo-700 hover:bg-indigo-50/80 rounded-xl transition-colors font-medium text-left" data-value="Gujarati" data-flag="🇮🇳">
+                                <span class="text-base">🇮🇳</span> Gujarati
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hidden input for backward compatibility -->
+                <input type="hidden" id="language-select" value="English">
+
+                <!-- Upload Button -->
+                <input type="file" id="file-upload" accept=".pdf" class="hidden">
+                <label for="file-upload"
+                    class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                    <span class="font-semibold text-sm text-slate-700">Upload PDF</span>
+                </label>
+
+                <!-- Process Button -->
+                <button id="process-btn"
+                    class="flex items-center gap-2 px-6 py-2.5 bg-slate-400 text-white rounded-xl font-semibold text-sm transition-colors shadow-lg shadow-slate-200 disabled:opacity-80 disabled:cursor-not-allowed hover:bg-slate-500"
+                    disabled>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2"></path>
+                    </svg>
+                    Process Document
+                </button>
+            </div>
+
+            <!-- User/Utility Icons (Removed Assistant Toggle) -->
+            <div class="flex items-center gap-4 border-l border-slate-200 pl-6 ml-2">
+                <!-- Can add settings or user profile here later -->
+            </div>
+        </nav>
+
+        <!-- Sub Navigation Tabs -->
+        <div style="position: relative; z-index: 1;" class="max-w-[1600px] mx-auto mt-4 flex justify-center">
+            <div class="glass-card rounded-full p-1.5 flex gap-1">
+                <button
+                    class="tab-btn active px-6 py-2 bg-indigo-600 text-white rounded-full text-sm font-semibold shadow-md"
+                    data-tab="overview">Overview</button>
+                <button
+                    class="tab-btn px-6 py-2 text-slate-500 hover:text-slate-800 rounded-full text-sm font-medium transition-colors"
+                    data-tab="compliance">Compliance</button>
+                <button
+                    class="tab-btn px-6 py-2 text-slate-500 hover:text-slate-800 rounded-full text-sm font-medium transition-colors"
+                    data-tab="visuals">Visuals</button>
+                <button
+                    class="tab-btn px-6 py-2 text-slate-500 hover:text-slate-800 rounded-full text-sm font-medium transition-colors"
+                    data-tab="comparison">Comparison</button>
+                <button
+                    class="tab-btn px-6 py-2 text-slate-500 hover:text-slate-800 rounded-full text-sm font-medium transition-colors"
+                    data-tab="assistant">Assistant</button>
+            </div>
+        </div>
+    </header>
+    <!-- END: Navigation -->
+
+    <!-- BEGIN: Main Content Layout -->
+    <main class="max-w-[1600px] mx-auto px-6 pb-12 w-full h-[calc(100vh-140px)]" data-purpose="dashboard-layout">
+
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active flex-col lg:flex-row gap-6 items-start h-full">
+            <!-- Hero Summary Section -->
+            <section class="flex-1 w-full glass-card rounded-3xl h-full p-8 relative overflow-hidden flex flex-col"
+                data-purpose="summary-container">
+                <!-- Section Header -->
+                <div class="flex items-center justify-between mb-8 flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">📋</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Simplified Summary</h2>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="listen-btn"
+                            class="btn-premium-purple flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-semibold text-sm shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-transform">
+                            <i class="fas fa-volume-up"></i>
+                            Listen
+                        </button>
+                        <button id="download-btn"
+                            class="btn-premium-teal flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-semibold text-sm shadow-lg shadow-teal-100 hover:scale-[1.02] active:scale-95 transition-transform">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div id="summary-content" class="content-area flex-1 overflow-y-auto text-slate-700 relative z-10 pr-4">
+                    <div class="flex flex-col items-center justify-center h-full text-center"
+                        data-purpose="empty-state-placeholder">
+                        <div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
+                            <span class="text-4xl text-indigo-400">📥</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800 mb-2">Ready to analyze</h3>
+                        <p class="text-slate-500 max-w-md mx-auto">Upload a legislative document to start AI analysis.
+                            Our engine will generate a comprehensive summary in seconds.</p>
+                    </div>
+                </div>
+                <audio id="audio-player" hidden></audio>
+
+                <!-- Decorative subtle element -->
+                <div
+                    class="absolute bottom-[-100px] right-[-100px] w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-50 z-0 pointer-events-none">
+                </div>
+            </section>
+
+            <!-- Sidebar Widgets -->
+            <div class="w-full lg:w-[400px] flex flex-col gap-6 h-full" data-purpose="sidebar-widgets">
+                <!-- Widget: Efficiency Hub -->
+                <div class="glass-sidebar-card rounded-3xl p-6 shadow-sm flex-shrink-0"
+                    data-purpose="efficiency-hub-widget">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-xl">💰</span>
+                        <h3 class="text-lg font-bold text-slate-800">Efficiency Hub</h3>
+                    </div>
+                    <div class="efficiency-accent rounded-2xl p-6 mb-6">
+                        <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Token Savings</p>
+                        <div class="flex items-baseline gap-2">
+                            <span id="token-savings" class="text-5xl font-extrabold text-emerald-700">0</span>
+                            <span class="text-emerald-500 text-sm font-medium">tokens</span>
+                        </div>
+                        <p class="text-xs text-emerald-600/70 mt-2 font-medium">Saved using ScaleDown™ optimization</p>
+                    </div>
+                    <div class="space-y-4 px-1">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200/50">
+                            <span class="text-sm text-slate-500">Cost Saved</span>
+                            <span id="cost-saved" class="text-sm font-bold text-slate-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-sm text-slate-500">Efficiency Ratio</span>
+                            <span id="comp-ratio" class="text-sm font-bold text-slate-800">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Widget: Smart Glossary -->
+                <div class="glass-sidebar-card flex-1 flex flex-col rounded-3xl p-6 shadow-sm min-h-0"
+                    data-purpose="smart-glossary-widget">
+                    <div class="flex items-center gap-2 mb-6 flex-shrink-0">
+                        <span class="text-xl">📜</span>
+                        <h3 class="text-lg font-bold text-slate-800">Smart Glossary</h3>
+                    </div>
+                    <!-- Add inline styles or tailwind classes to center placeholder initially -->
+                    <div id="glossary-content" class="content-area flex-1 overflow-y-auto">
+                        <div
+                            class="flex flex-col items-center justify-center h-full text-center border-2 border-dashed border-slate-200 rounded-2xl p-6">
+                            <div class="p-3 bg-slate-50 rounded-full mb-4">
+                                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor"
+                                    viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-slate-400 font-medium italic">Key legal terms will appear here as the
+                                AI parses your document.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance Tab -->
+        <div id="compliance-tab" class="tab-content flex-col lg:flex-row gap-6 items-start h-full">
+            <section class="flex-1 w-full glass-card rounded-3xl h-full p-8 relative overflow-hidden flex flex-col">
+                <div class="flex items-center gap-3 mb-8 flex-shrink-0">
+                    <span class="text-3xl">🎯</span>
+                    <h2 class="text-2xl font-bold text-slate-800">Compliance Checklist</h2>
+                </div>
+                <div id="compliance-content" class="content-area flex-1 overflow-y-auto pr-4">
+                    <p class="text-slate-500 italic">Process a document to see your compliance To-Dos.</p>
+                </div>
+            </section>
+            <div class="w-full lg:w-[400px] flex flex-col gap-6 h-full">
+                <section class="glass-sidebar-card flex-1 flex flex-col rounded-3xl p-6 shadow-sm min-h-0">
+                    <div class="flex items-center gap-2 mb-6 flex-shrink-0">
+                        <span class="text-xl">📜</span>
+                        <h3 class="text-lg font-bold text-slate-800">Legal Citations</h3>
+                    </div>
+                    <div id="citations-content" class="content-area flex-1 overflow-y-auto">
+                        <p class="text-slate-400 font-medium italic">Act references will appear here.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Visuals Tab -->
+        <div id="visuals-tab" class="tab-content flex-col lg:flex-row gap-6 items-start h-full">
+            <section class="flex-1 w-full glass-card rounded-3xl h-full p-8 relative overflow-hidden flex flex-col">
+                <div class="flex items-center gap-3 mb-8 flex-shrink-0">
+                    <span class="text-3xl">📊</span>
+                    <h2 class="text-2xl font-bold text-slate-800">Risk & Complexity Analysis</h2>
+                </div>
+                <div class="content-area flex-1 overflow-y-auto flex items-center justify-center">
+                    <div class="w-full max-w-[500px] h-[500px]">
+                        <canvas id="riskRadarChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            <div class="w-full lg:w-[400px] flex flex-col gap-6 h-full">
+                <section class="glass-sidebar-card flex-1 flex flex-col rounded-3xl p-6 shadow-sm min-h-0">
+                    <div class="flex items-center gap-2 mb-6 flex-shrink-0">
+                        <span class="text-xl">📅</span>
+                        <h3 class="text-lg font-bold text-slate-800">Legislative Timeline</h3>
+                    </div>
+                    <div id="timeline-content" class="content-area flex-1 overflow-y-auto">
+                        <p class="text-slate-400 font-medium italic">Coming Soon: Visual Roadmap.</p>
+                    </div>
+                </section>
+                <!-- Entity Map gets added here dynamically via JS, so we'll leave space. -->
+                <div id="entity-map-container" class="flex flex-col flex-1 h-full min-h-0"></div>
+            </div>
+        </div>
+
+        <!-- Comparison Tab -->
+        <div id="comparison-tab" class="tab-content flex-col lg:flex-row gap-6 items-start h-full">
+            <section class="flex-1 w-full glass-card rounded-3xl h-full p-8 relative overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between mb-8 flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">⚖️</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Bill Comparison Engine</h2>
+                    </div>
+                    <button id="compare-run-btn"
+                        class="bg-slate-400 text-white px-6 py-2.5 rounded-xl font-semibold shadow-md active:scale-95 transition-transform disabled:opacity-75 disabled:cursor-not-allowed hover:bg-slate-500"
+                        disabled>
+                        🔄 Compare Versions
+                    </button>
+                </div>
+
+                <div class="flex gap-6 mb-8 flex-shrink-0">
+                    <div
+                        class="flex-1 border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 hover:bg-slate-50 hover:border-indigo-400 transition-colors">
+                        <h4 class="font-bold text-slate-700">Version 1 (Old)</h4>
+                        <input type="file" id="file-v1" accept=".pdf" class="hidden">
+                        <label for="file-v1"
+                            class="cursor-pointer bg-white border border-slate-200 shadow-sm px-4 py-2 rounded-xl text-indigo-600 font-semibold text-sm hover:bg-indigo-50"><i
+                                class="fas fa-history mr-2"></i> Select V1</label>
+                        <span id="v1-name" class="text-xs text-slate-500">No file selected</span>
+                    </div>
+                    <div
+                        class="flex-1 border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 hover:bg-slate-50 hover:border-indigo-400 transition-colors">
+                        <h4 class="font-bold text-slate-700">Version 2 (New)</h4>
+                        <input type="file" id="file-v2" accept=".pdf" class="hidden">
+                        <label for="file-v2"
+                            class="cursor-pointer bg-white border border-slate-200 shadow-sm px-4 py-2 rounded-xl text-teal-600 font-semibold text-sm hover:bg-teal-50"><i
+                                class="fas fa-plus-circle mr-2"></i> Select V2</label>
+                        <span id="v2-name" class="text-xs text-slate-500">No file selected</span>
+                    </div>
+                </div>
+
+                <div id="comparison-content"
+                    class="content-area flex-1 overflow-y-auto pr-4 border-t border-slate-200 pt-6">
+                    <p class="text-slate-500 italic text-center mt-10">Upload two versions of a document to see the
+                        differences side-by-side.</p>
+                </div>
+            </section>
+            <div class="w-full lg:w-[400px] flex flex-col gap-6 h-full">
+                <section class="glass-sidebar-card flex-1 flex flex-col rounded-3xl p-6 shadow-sm min-h-0">
+                    <div class="flex items-center gap-2 mb-6 flex-shrink-0">
+                        <span class="text-xl">📊</span>
+                        <h3 class="text-lg font-bold text-slate-800">Change Insights</h3>
+                    </div>
+                    <div id="compare-insights" class="content-area flex-1 overflow-y-auto">
+                        <p class="text-slate-400 font-medium italic">Detailed diff analysis will appear here.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Assistant Tab -->
+        <div id="assistant-tab" class="tab-content flex-col lg:flex-row gap-6 items-start h-full">
+            <section class="flex-1 w-full glass-card rounded-3xl h-full p-8 relative overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between mb-8 flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🤖</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Citizen Assistant</h2>
+                    </div>
+                </div>
+                
+                <div id="chat-messages" class="flex-1 overflow-y-auto pr-4 flex flex-col gap-4 mb-6 min-h-0">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <div class="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/50 flex flex-col gap-3">
+                    <div id="suggested-questions" class="flex flex-wrap gap-2 mb-2">
+                        <!-- Chips added by JS -->
+                    </div>
+                    <textarea id="user-question" placeholder="Ask a specific question..."
+                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 resize-none h-[80px] p-3 text-sm"></textarea>
+                    <button id="ask-btn"
+                        class="w-full btn-premium-purple text-white font-semibold py-2.5 rounded-xl shadow-md transition-transform active:scale-[0.98]">
+                        <i class="fas fa-paper-plane mr-2"></i> Analyze & Answer
+                    </button>
+                </div>
+            </section>
+            
+            <div class="w-full lg:w-[400px] flex flex-col gap-6 h-full">
+                <section class="glass-sidebar-card flex-1 flex flex-col rounded-3xl p-6 shadow-sm min-h-0">
+                    <div class="flex items-center gap-2 mb-4 flex-shrink-0">
+                        <span class="text-xl">💡</span>
+                        <h3 class="text-lg font-bold text-slate-800">Assistant Info</h3>
+                    </div>
+                    <div class="space-y-4 text-sm text-slate-600">
+                        <p>Our AI Assistant is trained on legislative documents to provide accurate, context-aware answers.</p>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>Identify legal risks</li>
+                            <li>Explain complex terminology</li>
+                            <li>Summarize specific clauses</li>
+                            <li>Check compliance dates</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    </main>
+    <!-- END: Main Content Layout -->
+
+    <!-- Loader -->
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <p id="loader-text" class="mt-6 text-indigo-700 font-semibold text-lg tracking-wide">Extracting metadata...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        // Tab switching for Tailwind implementation adjustments
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active classes
+                    tabBtns.forEach(b => {
+                        b.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                        b.classList.add('text-slate-500', 'hover:text-slate-800');
+                    });
+
+                    // Add to current
+                    btn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+                    btn.classList.remove('text-slate-500', 'hover:text-slate-800');
+
+                    // The actual switching is handled by script.js using .active and data-tab mapping
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+flask
+flask-cors
+pdfplumber
+python-dotenv
+deep-translator
+gTTS
+fpdf2
+pytesseract
+Pillow
+streamlit
+requests
