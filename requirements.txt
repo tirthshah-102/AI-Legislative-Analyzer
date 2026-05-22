@@ -9,3 +9,5 @@ pytesseract
 Pillow
 streamlit
 requests
+PyJWT
+cryptography

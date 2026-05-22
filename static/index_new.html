@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Legislative Analyzer - Pro Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p class="text-white">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="authScreen" class="min-h-screen flex items-center justify-center px-4">
+        <div class="w-full max-w-md">
+            <!-- Login Form -->
+            <div id="loginForm" class="glass-effect p-8 shadow-2xl">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        ⚖️ Legislative AI
+                    </h1>
+                    <p class="text-gray-600 mt-2">Intelligent Legal Document Analysis</p>
+                </div>
+
+                <div class="space-y-4">
+                    <input type="text" id="loginUsername" placeholder="Username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="password" id="loginPassword" placeholder="Password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button onclick="handleLogin()" class="w-full gradient-btn text-white py-2 rounded-lg font-semibold">
+                        Login
+                    </button>
+                </div>
+
+                <p class="text-center text-gray-600 mt-4">
+                    Don't have an account? <a href="javascript:toggleForms()" class="text-purple-600 font-semibold hover:underline">Register</a>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="glass-effect p-8 shadow-2xl hidden">
+                <h2 class="text-2xl font-bold mb-6">Create Account</h2>
+
+                <div class="space-y-4">
+                    <input type="text" id="regUsername" placeholder="Username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="email" id="regEmail" placeholder="Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="password" id="regPassword" placeholder="Password (min 8 chars)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button onclick="handleRegister()" class="w-full gradient-btn text-white py-2 rounded-lg font-semibold">
+                        Register
+                    </button>
+                </div>
+
+                <p class="text-center text-gray-600 mt-4">
+                    Already have an account? <a href="javascript:toggleForms()" class="text-purple-600 font-semibold hover:underline">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="min-h-screen p-6 hidden">
+        <!-- Header -->
+        <div class="glass-effect rounded-lg p-4 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">⚖️ AI Legislative Analyzer</h1>
+                <p id="userDisplay" class="text-gray-600 text-sm">Welcome back!</p>
+            </div>
+            <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                Logout
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="glass-effect rounded-lg p-4 mb-6 flex gap-4 border-b">
+            <button onclick="switchTab('upload')" class="tab-btn active px-4 py-2 font-semibold text-gray-700 tab-active">
+                <i class="fas fa-upload mr-2"></i>Upload PDF
+            </button>
+            <button onclick="switchTab('analyze')" class="tab-btn px-4 py-2 font-semibold text-gray-700 hover:text-purple-600">
+                <i class="fas fa-brain mr-2"></i>Analyze
+            </button>
+            <button onclick="switchTab('documents')" class="tab-btn px-4 py-2 font-semibold text-gray-700 hover:text-purple-600">
+                <i class="fas fa-file mr-2"></i>My Documents
+            </button>
+            <button onclick="switchTab('history')" class="tab-btn px-4 py-2 font-semibold text-gray-700 hover:text-purple-600">
+                <i class="fas fa-history mr-2"></i>History
+            </button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="uploadTab" class="tab-content active space-y-6">
+            <div class="glass-effect rounded-lg p-8">
+                <h2 class="text-xl font-bold mb-4">📄 Upload Legislative PDF</h2>
+                
+                <div id="dropZone" class="border-2 border-dashed border-purple-300 rounded-lg p-8 text-center cursor-pointer hover:bg-purple-50 transition">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-purple-400 mb-4"></i>
+                    <p class="text-lg font-semibold text-gray-700">Drag & drop your PDF here</p>
+                    <p class="text-sm text-gray-500">or</p>
+                    <input type="file" id="fileInput" accept=".pdf" class="hidden">
+                    <button onclick="document.getElementById('fileInput').click()" class="gradient-btn text-white px-6 py-2 rounded-lg mt-4">
+                        Browse Files
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <div id="progressSection" class="mt-6 hidden">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-semibold">Upload Progress</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div id="fileInfo" class="mt-4 p-4 bg-blue-50 rounded-lg hidden">
+                    <p><strong>File:</strong> <span id="fileName"></span></p>
+                    <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                    <p><strong>Status:</strong> <span id="fileStatus">Ready</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analyze Tab -->
+        <div id="analyzeTab" class="tab-content space-y-6 hidden">
+            <div class="glass-effect rounded-lg p-8">
+                <h2 class="text-xl font-bold mb-4">🔍 Analyze Document</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Language</label>
+                        <select id="analysisLanguage" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <option>English</option>
+                            <option>Hindi</option>
+                            <option>Gujarati</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea id="analyzeText" placeholder="Paste the extracted text here..." class="w-full h-40 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+
+                <div class="mt-4 flex gap-4">
+                    <button onclick="handleAnalyze()" class="gradient-btn text-white px-6 py-2 rounded-lg font-semibold">
+                        <i class="fas fa-magic mr-2"></i>Analyze
+                    </button>
+                    <button onclick="handleExport('pdf')" class="px-6 py-2 border border-purple-500 text-purple-600 rounded-lg font-semibold hover:bg-purple-50">
+                        <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="resultsSection" class="space-y-4 hidden">
+                <div class="glass-effect rounded-lg p-8">
+                    <h3 class="text-lg font-bold mb-4">📋 Summary</h3>
+                    <div id="summaryContent" class="prose prose-sm max-w-none"></div>
+                </div>
+
+                <div class="glass-effect rounded-lg p-8">
+                    <h3 class="text-lg font-bold mb-4">📊 Metrics</h3>
+                    <div id="metricsContent" class="grid grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div id="documentsTab" class="tab-content hidden">
+            <div class="glass-effect rounded-lg p-8">
+                <h2 class="text-xl font-bold mb-4">📁 My Documents</h2>
+                <div id="documentsList" class="space-y-2">
+                    <p class="text-gray-500">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="historyTab" class="tab-content hidden">
+            <div class="glass-effect rounded-lg p-8">
+                <h2 class="text-xl font-bold mb-4">💬 Chat History</h2>
+                <div id="historyList" class="space-y-2">
+                    <p class="text-gray-500">No history yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="new-script.js"></script>
+</body>
+</html>
